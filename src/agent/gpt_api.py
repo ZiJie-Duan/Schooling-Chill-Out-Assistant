@@ -3,7 +3,7 @@ import openai
 class GPT_API:
     def __init__(self, api_key: str):
         openai.api_key = api_key
-        self.model = "gpt-3.5-turbo"  # 设置默认模型
+        self.model = "gpt-4"  # 设置默认模型
 
     def set_model(self, model: str):
         self.model = model
@@ -58,3 +58,25 @@ class GPT_API:
                 if word:
                     yield word 
     
+
+    def query_func(self, 
+            messages,
+            functions,
+            temperature = 0.5, 
+            max_tokens = 100,
+            function_call = "auto",
+            model = None) -> str:
+        
+        if not model:
+            model = self.model
+
+        response = openai.ChatCompletion.create(
+            model = model,
+            messages = messages,
+            temperature = temperature,
+            max_tokens = max_tokens,
+            functions = functions,
+            function_call = function_call
+        )
+
+        return response["choices"][0]["message"]
