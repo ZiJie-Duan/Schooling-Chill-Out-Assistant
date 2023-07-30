@@ -62,10 +62,12 @@ class GPT_API:
     def query_func(self, 
             messages,
             functions,
-            temperature = 0.5, 
+            temperature = 0.0, 
             max_tokens = 100,
             function_call = "auto",
             model = None) -> str:
+        
+        print("\n\n\nsend",messages)
         
         if not model:
             model = self.model

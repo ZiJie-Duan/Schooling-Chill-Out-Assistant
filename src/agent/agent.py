@@ -114,9 +114,9 @@ class AgentSystem:
         self.memo = Memo(memopath)
         self.root_brick = root_brick
     
-    def build_dialogue(self, LLM_Memory, prompt) -> None:
+    
+    def build_dialogue(self, prompt) -> None:
         dialogue = [
-            {"role" : "system", "content" : LLM_Memory},
             {"role" : "user", "content" : prompt}
         ]
         return dialogue
@@ -129,22 +129,20 @@ class AgentSystem:
 
     def prompt_rendering(self, brick: AgentBrick, mode = "func", args = {}) -> None:
         if mode == "func":
-            back_ground = self.memo("LLM_memory")["LLM_memory"]
             scenario_prompt = self.template_rendering(brick.back_prompt, args)
             chooies_prompt = [action.front_prompt for action in brick.actions]
-            prompt = """"""
+            prompt = ""
             prompt += scenario_prompt + "\n"
             for i, chooies in enumerate(chooies_prompt):
                 prompt += f"{i+1}. {chooies}\n"
             
-            return back_ground, prompt
+            return prompt
 
         elif mode == "single":
-            back_ground = self.memo("LLM_memory")["LLM_memory"]
             scenario_prompt = self.template_rendering(brick.back_prompt, args)
-            prompt = """"""
+            prompt = ""
             prompt += scenario_prompt + "\n"
-            return back_ground, prompt
+            return prompt
     
 
     def function_rendering(self, brick: AgentBrick) -> None:
@@ -167,7 +165,10 @@ class AgentSystem:
         if "function_call" in reply:
             function_name = reply["function_call"]["name"]
             parameters = reply["function_call"]["arguments"]
-            parameters = json.loads(parameters)
+            try:
+                parameters = json.loads(parameters)
+            except:
+                return ("No_Func", {})
             return (function_name, parameters)
         else:
             return ("No_Func", {"ai" : reply["content"]})
@@ -176,16 +177,7 @@ class AgentSystem:
     def init_enviroment(self, **kwargs: Any) -> None:
         for key, value in kwargs.items():
             self.memo.add(key, value)
-    
 
-    def show_agent(self):
-        pass
-        print(self.root_brick.brick_name)
-
-        root_brick = self.root_brick
-        for brick in root_brick.actions:
-            print(brick.brick_name)
-    
 
     def memo_update(self, mode: str, **kwargs: Any) -> None:
         self.memo.update(**kwargs)
@@ -220,24 +212,25 @@ class AgentSystem:
 
         while tasks_loop:
             args, brick = tasks_loop.pop(0)
+            print("brick name : ",brick.brick_name)
 
             if brick.brick_think == "think":
                 # think brick, use GPT API to make decision or solve problem
 
                 if brick.action_type == "multi":
                     # use GPT API to make decision
-                    llm_memory, prompt = self.prompt_rendering(brick, mode="func", args=args)
-                    message = self.build_dialogue(llm_memory, prompt)
+                    prompt = self.prompt_rendering(brick, mode="func", args=args)
+                    message = self.build_dialogue(prompt)
                     function_data = self.function_rendering(brick)
 
                     for i in range(5):
-                        try:
-                            response = self.gpt_api.query_func(message, function_data)
-                            break
-                        except:
-                            time.sleep(1)
-                            i = 999
-                        #response = self.gpt_api.query_func(message, function_data)
+                        # try:
+                        #     response = self.gpt_api.query_func(message, function_data, max_tokens=2000)
+                        #     break
+                        # except:
+                        #     time.sleep(1)
+                        #     i = 999
+                        response = self.gpt_api.query_func(message, function_data, max_tokens=2000)
                         break
 
                     if i == 999:
@@ -247,7 +240,9 @@ class AgentSystem:
                         self.api_func_reply_decode(response)
                     
                     if function_name == "No_Func":
-                        raise Exception("GPT API Error, GPT not call any function")
+                        print("GPT API Error, GPT not call any function")
+                        tasks_loop.append([args, brick])
+                        continue
                     
                     # call the next brick
                     for action in brick.actions:
@@ -264,17 +259,19 @@ class AgentSystem:
 
                 elif brick.action_type == "single":
                     # use GPT API to solve problem
-                    llm_memory, prompt = self.prompt_rendering(brick, mode="single", args=args)
-                    message = self.build_dialogue(llm_memory, prompt)
+                    prompt = self.prompt_rendering(brick, mode="single", args=args)
+                    message = self.build_dialogue(prompt)
                     function_data = self.function_rendering(brick)
 
                     for i in range(5):
-                        try:
-                            response = self.gpt_api.query_func(message, function_data, function_call="none")
-                        except:
-                            time.sleep(1)
-                    if i == 4:
-                        raise Exception("GPT API Error")
+                        # try:
+                        #     response = self.gpt_api.query_func(message, function_data, max_tokens=2000)
+                        #     break
+                        # except:
+                        #     time.sleep(1)
+                        #     i = 999
+                        response = self.gpt_api.query_func(message, function_data, max_tokens=2000)
+                        break
                     
                     _, parameters =\
                         self.api_func_reply_decode(response)
@@ -282,7 +279,6 @@ class AgentSystem:
                     action = brick.actions[0]
                     next_args = self.get_parameter(action, parameters)
                     tasks_loop.append((next_args, action))
-                    break
 
             else:
                 res_args = brick.call_back(**args)

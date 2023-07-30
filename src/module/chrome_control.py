@@ -50,12 +50,13 @@ class Unimelb_Lecture_Rec_CC(ChromeControl):
             subtitle = self.driver.find_element(by=By.CLASS_NAME, value='highlight')
             subtitle_text = subtitle.text
         except:
-            subtitle_text = "No text found"
+            subtitle_text = "<No-text-found>"
         
         return (self.curr_time.text, subtitle_text)
 
     def play_or_stop(self):
         self.play_button.click()
+    
 
 
 #cc = ChromeControl("127.0.0.1:9222", r"C:\Users\lucyc\AppData\Local\Google\Chrome\User Data", "Default")

@@ -6,8 +6,8 @@ class Memo:
         self.filename = filename
         self.data = self.read_from_file()
     
-    def __call__(self, *args: Any) -> Any:
-        return {arg:self.data[arg] for arg in args}
+    def __call__(self, args: str) -> Any:
+        return self.data[args]
 
     def update(self, **kwargs: Any) -> None:
         # remove the key that is not in the data
@@ -21,7 +21,7 @@ class Memo:
             with open(self.filename, "r") as file:
                 data = json.load(file)
         except FileNotFoundError:
-            data = {'LLM_memory':"这是一段重要的话，在2002年段子杰出生了"}
+            data = {}
         return data
 
     def write_to_file(self):
