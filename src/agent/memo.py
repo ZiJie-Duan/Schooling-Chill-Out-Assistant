@@ -10,8 +10,10 @@ class Memo:
         return {arg:self.data[arg] for arg in args}
 
     def update(self, **kwargs: Any) -> None:
+        # remove the key that is not in the data
         for key, value in kwargs.items():
-            self.data[key] = value
+            if key in self.data:
+                self.data[key] = value
         self.write_to_file()
 
     def read_from_file(self) -> any:
@@ -26,4 +28,8 @@ class Memo:
         with open(self.filename, "w") as file:
             json.dump(self.data, file, indent=2)
 
+    def register(self, key: str, value: Any) -> None:
+        if key not in self.data:
+            self.data[key] = value
+            self.write_to_file()
 
