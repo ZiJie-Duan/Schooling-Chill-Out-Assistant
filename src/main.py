@@ -14,8 +14,12 @@ def print_next(info):
     print("下一个操作：", info)
 
 
+rt = AgentBrick("return_node")
+rt.easy_set_up("do popr nf")
+
+
 pn = AgentBrick("print_next")
-pn.easy_set_up("do env", call_back=print_next)
+pn.easy_set_up("do single", call_back=print_next, brick_list=[rt])
 pn.parameters = {"info": {"type": "string", "description": "下一个操作"}}
 
 
@@ -26,6 +30,7 @@ important_notice.front_prompt = """
 """
 important_notice.parameters = {"notice": {"type": "string", "description": "重要信息"}}
 important_notice.easy_set_up("do single", call_back=print_imporant_notice, brick_list=[pn])
+
 
 
 ignore_info = AgentBrick("ignore_info", "忽略无用的信息")
@@ -49,6 +54,6 @@ root_b.parameters = {"subtitle": {"type": "string", "description": "字幕信息
 root_b.easy_set_up("think multi", brick_list=[important_notice, ignore_info])
 
 
-sys = AgentSystem(root_b,api_key="")
+sys = AgentSystem(root_b,api_key="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")
 sys.register({"info":"??"})
 sys.run({"subtitle" : "hi 大家好，现在上课了哈，你们昨天作业做的怎么样了？那个你们记得明天晚上9点前提交哈，不然就算迟交了，那个，就会扣分了哈，那个，你们有什么问题吗？"})

@@ -47,7 +47,7 @@ class AgentBrick:
                 back_prompt: str = "",
                 brick_think: str = "", # Operation mode of the brick: 'think' or 'do'
                 action_type: str = "", # Brick's approach to executing actions: 'multi', 'single', 'environment', or 'pop_reply'
-                actions: list = [],
+                actions: list = None,
                 parameters: dict = {},
                 call_back: object = None
                 ) -> None:
@@ -66,7 +66,7 @@ class AgentBrick:
 
     def easy_set_up(self, setting : str, brick_list : List = [], call_back = None) -> None:
         """
-        think, do, multi, single, env, popr
+        think, do, multi, single, env, popr, nf
         """
         args = setting.split(" ")
         if "think" in args:
@@ -81,7 +81,10 @@ class AgentBrick:
             self.action_type = "environment"
         elif "popr" in args:
             self.action_type = "pop_reply"
-        
+
+        if "nf" in args:
+            self.call_back = lambda:{}
+            
         if "name" in args:
             self.brick_name = args[args.index("name")+1]
 
@@ -90,10 +93,15 @@ class AgentBrick:
         if self.description == "":
             self.description = "no description"
 
+        if not self.actions:
+            self.actions = []
         for brick in brick_list:
+
             self.actions.append(brick)
         
-        self.call_back = call_back
+        if call_back:
+            self.call_back = call_back
+
 
 
 class AgentSystem:
@@ -129,8 +137,6 @@ class AgentSystem:
             for i, chooies in enumerate(chooies_prompt):
                 prompt += f"{i+1}. {chooies}\n"
             
-            pprint.pprint(prompt)
-
             return back_ground, prompt
 
         elif mode == "single":
@@ -210,6 +216,7 @@ class AgentSystem:
 
         tasks_loop = [(args,self.root_brick)]
         decision_node = [args,self.root_brick]
+        action_chooies = None
 
         while tasks_loop:
             args, brick = tasks_loop.pop(0)
@@ -230,6 +237,8 @@ class AgentSystem:
                         except:
                             time.sleep(1)
                             i = 999
+                        #response = self.gpt_api.query_func(message, function_data)
+                        break
 
                     if i == 999:
                         raise Exception("GPT API Error")
@@ -251,6 +260,7 @@ class AgentSystem:
                             break
                     
                     decision_node = [args,brick] # update decision node
+                    action_chooies = action
 
                 elif brick.action_type == "single":
                     # use GPT API to solve problem
@@ -296,7 +306,7 @@ class AgentSystem:
 
                     next_args = self.get_parameter(decision_node[1], history_args)
 
-                    decision_node[1].actions.remove(brick)
+                    decision_node[1].actions.remove(action_chooies)
                     decision_node[0] = next_args
                     tasks_loop.insert(0, decision_node)
 
