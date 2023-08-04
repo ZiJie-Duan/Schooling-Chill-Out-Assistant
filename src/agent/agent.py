@@ -5,6 +5,85 @@ import time
 import pprint
 import json
 import uuid
+from functools import wraps
+import inspect
+
+# def example_function(param1, param2, param3='default'):
+#     pass
+
+# signature = inspect.signature(example_function)
+
+# # 获取参数名
+# parameters = [param.name for param in signature.parameters.values()]
+# print(parameters)  # 输出 ['param1', 'param2', 'param3']
+
+# # 获取参数的详细信息
+# for name, param in signature.parameters.items():
+#     print('Name:', name)
+#     print('Default value:', param.default)
+#     print('Annotation:', param.annotation)
+#     print('Kind:', param.kind)
+#     print('---------')
+
+# def my_decorator(arg1, arg2):
+#     print(f"装饰器参数: {arg1}, {arg2}")
+
+#     def decorator(func):
+#         @wraps(func)
+#         def wrapper(*args, **kwargs):
+#             print(f"在函数 {func.__name__} 之前执行，装饰器参数为 {arg1} 和 {arg2}")
+#             result = func(*args, **kwargs)
+#             print(f"在函数 {func.__name__} 之后执行")
+#             return result
+#         return wrapper
+#     return decorator
+
+
+# @my_decorator("参数1", "参数2")
+# def example_function(param1, param2):
+#     print(f"在函数内部：{param1}, {param2}")
+
+# example_function("A", "B")
+
+
+# def type_classifier(type : any) -> str:
+#     pass
+
+# def brick(brick_type : str, envar :any = None) -> object:
+
+#     if brick_type == "think":
+#         def decorator(func):
+#             ab = AgentBrick(
+#                 brick_name = func.__name__,
+#                 description = func.__doc__,
+#                 brick_think = "think",
+
+
+
+
+#             )
+
+#             @wraps(func)  # 使用 wraps 装饰器
+#             def wrapper(*args, **kwargs):
+#                 signature = inspect.signature(func)
+                
+#                 return result
+#             return wrapper
+    
+#     elif brick_type == "do":
+#         pass
+    
+#     return decorator
+
+# @timing_decorator
+# def slow_function():
+#     """这是一个缓慢的函数"""
+#     print("这个函数执行得有点慢...")
+#     time.sleep(2)
+#     print("函数执行完毕!")
+
+# print(slow_function.__name__)  # 输出 "slow_function"
+# print(slow_function.__doc__)   # 输出 "这是一个缓慢的函数"
 
 
 class AgentBrick:

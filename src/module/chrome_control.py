@@ -56,22 +56,52 @@ class Unimelb_Lecture_Rec_CC(ChromeControl):
 
     def play_or_stop(self):
         self.play_button.click()
+
+
+
+# class Unimelb_Lecture_Rec2_CC(ChromeControl):
+
+#     def __init__(self, url, user_data_dir, profile_directory):
+#         super().__init__(url, user_data_dir, profile_directory)
+
+#     def lock_page(self, url):
+#         self.open_page("rec_page")
+#         self.get_url(url)
+    
+#     def lock_element(self):
+#         self.play_button = self.driver.find_element(by=By.CSS_SELECTOR, value='.video-btn.play-btn')
+#         self.curr_time = self.driver.find_element(by=By.CLASS_NAME, value='captionsOverlay')
+
+#     def get_subtitle(self):
+#         try:
+#             subtitle = self.driver.find_element(By.XPATH, value="/html/body/div[1]/div[2]/div[3]/div/span/span")
+#             subtitle_text = subtitle.text
+#         except Exception as e:
+#             subtitle_text = str(e)
+        
+#         return (subtitle_text)
+
+#     def play_or_stop(self):
+#         self.play_button.click()
     
 
 
 #cc = ChromeControl("127.0.0.1:9222", r"C:\Users\lucyc\AppData\Local\Google\Chrome\User Data", "Default")
 
 # if __name__ == "__main__":
-#     melb_cc = Unimelb_Lecture_Rec_CC("127.0.0.1:9222", r"C:\Users\lucyc\AppData\Local\Google\Chrome\User Data", "Default")
+#     melb_cc = Unimelb_Lecture_Rec2_CC("127.0.0.1:9222", r"C:\Users\lucyc\AppData\Local\Google\Chrome\User Data", "Default")
 #     url = input("Enter URL: ")
 #     melb_cc.lock_page(url)
-#     melb_cc.lock_element()
-#     count = 0
-#     while True:
-#         count += 1
+#     while 1:
 #         time.sleep(1)
 #         print(melb_cc.get_subtitle())
-#         if count % 5 == 0:
-#             melb_cc.play_or_stop()
-#             time.sleep(1)
-#             melb_cc.play_or_stop()
+    # melb_cc.lock_element()
+    # count = 0
+    # while True:
+    #     count += 1
+    #     time.sleep(1)
+    #     print(melb_cc.get_subtitle())
+    #     if count % 5 == 0:
+    #         melb_cc.play_or_stop()
+    #         time.sleep(1)
+    #         melb_cc.play_or_stop()
