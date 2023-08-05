@@ -2,32 +2,31 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 import time
 
-
 class ChromeControl:
 
     def __init__(self, url, user_data_dir, profile_directory):
-        self.page_dict = {}
+        self.page_dict = {} # 用于存储打开的页面
 
         self.options = webdriver.ChromeOptions()
         self.options.add_experimental_option("debuggerAddress", url)
-        self.options.add_argument(r"--user-data-dir=" + user_data_dir) #e.g. C:\Users\You\AppData\Local\Google\Chrome\User Data
-        self.options.add_argument(r'--profile-directory=' + profile_directory) #e.g. Profile 3
+        self.options.add_argument(r"--user-data-dir=" + user_data_dir) # 设置用户数据目录
+        self.options.add_argument(r'--profile-directory=' + profile_directory) # 设置配置文件目录
         print("Chrome options set")
-        self.driver = webdriver.Chrome(options=self.options)
+        self.driver = webdriver.Chrome(options=self.options) # 打开Chrome浏览器
         print("Chrome opened")
-    
-    def get_url(self, url):
+
+    def get_url(self, url): # 访问指定网址
         self.driver.get(url)
 
-    def switch_page(self, name):
+    def switch_page(self, name): # 切换页面
         self.driver.switch_to.window(self.page_dict[name])
 
-    def open_page(self, name):
+    def open_page(self, name): # 打开新的页面
         self.driver.execute_script("window.open('');")
         self.page_dict[name] = self.driver.window_handles[-1]
         self.switch_page(name)
 
-    def close_page(self, name):
+    def close_page(self, name): # 关闭指定页面
         self.driver.close(self.page_dict[name])
         del self.page_dict[name]
 
@@ -37,15 +36,15 @@ class Unimelb_Lecture_Rec_CC(ChromeControl):
     def __init__(self, url, user_data_dir, profile_directory):
         super().__init__(url, user_data_dir, profile_directory)
 
-    def lock_page(self, url):
+    def lock_page(self, url): # 锁定特定页面
         self.open_page("rec_page")
         self.get_url(url)
-    
-    def lock_element(self):
+
+    def lock_element(self): # 锁定元素
         self.play_button = self.driver.find_element(by=By.CSS_SELECTOR, value='.video-btn.play-btn')
         self.curr_time = self.driver.find_element(by=By.CLASS_NAME, value='currTime')
 
-    def get_subtitle(self):
+    def get_subtitle(self): # 获取字幕
         try:
             subtitle = self.driver.find_element(by=By.CLASS_NAME, value='highlight')
             subtitle_text = subtitle.text
@@ -54,36 +53,9 @@ class Unimelb_Lecture_Rec_CC(ChromeControl):
         
         return (self.curr_time.text, subtitle_text)
 
-    def play_or_stop(self):
+    def play_or_stop(self): # 控制播放或停止
         self.play_button.click()
 
-
-
-# class Unimelb_Lecture_Rec2_CC(ChromeControl):
-
-#     def __init__(self, url, user_data_dir, profile_directory):
-#         super().__init__(url, user_data_dir, profile_directory)
-
-#     def lock_page(self, url):
-#         self.open_page("rec_page")
-#         self.get_url(url)
-    
-#     def lock_element(self):
-#         self.play_button = self.driver.find_element(by=By.CSS_SELECTOR, value='.video-btn.play-btn')
-#         self.curr_time = self.driver.find_element(by=By.CLASS_NAME, value='captionsOverlay')
-
-#     def get_subtitle(self):
-#         try:
-#             subtitle = self.driver.find_element(By.XPATH, value="/html/body/div[1]/div[2]/div[3]/div/span/span")
-#             subtitle_text = subtitle.text
-#         except Exception as e:
-#             subtitle_text = str(e)
-        
-#         return (subtitle_text)
-
-#     def play_or_stop(self):
-#         self.play_button.click()
-    
 
 
 #cc = ChromeControl("127.0.0.1:9222", r"C:\Users\lucyc\AppData\Local\Google\Chrome\User Data", "Default")

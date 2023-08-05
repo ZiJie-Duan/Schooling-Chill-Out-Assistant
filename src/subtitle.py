@@ -1,5 +1,5 @@
 
-class Subtitle_Driver:
+class Subtitle:
 
     def __init__(self) -> None:
         self.subtitle = []
