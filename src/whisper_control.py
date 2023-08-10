@@ -22,15 +22,6 @@ class whisper_driver:
         self.sentence_index = -1 # 初始化句子索引
 
 
-
-
-
-
-
-
-
-        
-    
     def time_convert(self,time):
         # 将时间（秒）转换为时、分、秒、毫秒
         hours = time // 3600

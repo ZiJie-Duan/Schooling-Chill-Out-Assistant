@@ -3,6 +3,8 @@ from basic_tools import *
 import subprocess
 
 class Media:
+    """媒体音频控制类"""
+
     def __init__(self, infile, cmd ,outfile=None):
         self.infile = infile              # 输入文件路径
         self.cmd = cmd                    # 命令执行对象
@@ -17,13 +19,17 @@ class Media:
         # 1 表示音频已被分割至结束
 
         if outfile == None:              # 如果没有提供输出文件路径，则创建一个新路径
-            outfile = FILE_PATH()
+            outfile = FilePath()
             outfile.set_path(self.infile.build_new_file("tmp.mp3"))
             self.outfile = outfile
         else:
             self.outfile = outfile       # 设置输出文件路径
 
-    def get_length(self,filename):       # 获取音频文件时长
+
+    def get_length(self,filename):
+        """
+        获取音频文件时长
+        """
         result = subprocess.run(["ffprobe", "-v", "error", "-show_entries",
                                 "format=duration", "-of",
                                 "default=noprint_wrappers=1:nokey=1", filename],
@@ -32,7 +38,21 @@ class Media:
         return float(result.stdout)
 
 
-    def splite_audio(self,start=-1,duration=-1): # 分割音频
+    def splite_audio(self, start, duration): 
+        """
+        分割音频 start: 开始时间 duration: 时长
+        """
+        self.cmd("ffmpeg -i {} -ss {} -t {} -aq 0 -map a {}"\
+            .format(self.infile(),start,\
+            duration,self.outfile()))
+
+
+    def splite_audio(self, start=0, duration=0): 
+        """
+
+        分割音频 当duration为-1时，全选
+        """
+        
         if start == -1 or duration == -1:
             start = self.split_start
             duration = self.split_duration
@@ -53,8 +73,8 @@ class Media:
         self.cmd("ffmpeg -i {} -ss {} -t {} -aq 0 -map a {}"\
             .format(self.infile(),start,\
             duration,self.outfile()))
+        
 
-    
     def get_a_part_of_audio(self,duration=-1): # 获取音频的一部分
         print("get_a_part_of_audio")
         if self.finish_flag == 1:
@@ -76,14 +96,5 @@ class Media:
         else:
             return self.outfile()
 
-# 其他被注释掉的方法和测试代码
 
-# if __name__ == "__main__":
-#     file = PATH_CONVERT()
-#     cmd = SYSTEMcmd()
-#     media = MEDIA(file, cmd)
-#     media.set_media(r"C:\Users\lucyc\Desktop\aaa.mp4")
-#     media._timess["start"] = 0
-#     media._timess["duration"] = 180
-#     media.splite_audio(new_file_name="a.wav")
-#     input("Press any key to exit")
+
