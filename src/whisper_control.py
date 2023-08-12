@@ -46,21 +46,21 @@ class whisper_driver:
 
         
 
-wd = whisper_driver()
+# wd = whisper_driver()
 
-wd.model_load()
-wd.transcribe(r"C:\Users\lucyc\Desktop\05D.WAV")
+# wd.model_load()
+# wd.transcribe(r"C:\Users\lucyc\Desktop\05D.WAV")
 
-wd.init_reader()
-senc = None
-while True:
-    senc = wd.get_sentence()
-    if senc != (None,None,None):
-        print("[{}:{}:{},{} ----> {}:{}:{},{}] {}".format(
-            senc[0][0],senc[0][1],senc[0][2],senc[0][3],\
-            senc[1][0],senc[1][1],senc[1][2],senc[1][3],\
-            senc[2]))
-    else:
-        break
+# wd.init_reader()
+# senc = None
+# while True:
+#     senc = wd.get_sentence()
+#     if senc != (None,None,None):
+#         print("[{}:{}:{},{} ----> {}:{}:{},{}] {}".format(
+#             senc[0][0],senc[0][1],senc[0][2],senc[0][3],\
+#             senc[1][0],senc[1][1],senc[1][2],senc[1][3],\
+#             senc[2]))
+#     else:
+#         break
         
 
