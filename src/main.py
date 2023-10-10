@@ -169,6 +169,56 @@ def data_to_subtitle(path: str):
         # 这里我们进行了一点转换，subt[2]原本是一个字符串，但是我们需要将其转为列表
         subt_writer.write_subtitle(subt[0], subt[1], [subt[2]])
 
+
+def get_text(file_path: str, text_lenth: int):
+    # 从文件中获取文本, 字符串长度为text_lenth
+    text = None
+    with open(file_path, "r", encoding="utf-8") as file:
+        text = file.read()
+    
+    for i in range(0, len(text), text_lenth):
+        yield text[i : i + text_lenth]
+    yield text[i + text_lenth :]
+
+
+def purefy_subtitle(in_path: str, out_path: str, lenth: str):
+    text_in = FilePath(in_path)
+    text_out = text_in.nfile(full_name=out_path)
+    text_gen = get_text(text_in(), int(lenth))
+
+    prompt = "翻译‘<<>>’中的文本 到中文\n <<"
+
+    with open(text_out(), "w", encoding="utf-8") as file:
+        while True:
+            text = next(text_gen)
+            if not text:
+                break
+        
+            for count in range(5):
+                try:
+                    summary = gpt.query([{"role": "user", "content": prompt + text + ">>"}], max_tokens=3500, temperature=0.0, timeout=30)
+                    break
+                except Exception as e:
+                    print(e)
+                    print("[purefy_subtitle] : GPT API error, retrying...")
+                    continue
+            
+            if count == 4:
+                input("[purefy_subtitle] : GPT API error, please check your API key and network. Press any key to continue...")
+                exit(0)
+            
+            print("[purefy_subtitle] : {} ----> {}".format(text, summary))
+            file.write(summary + "\n")
+            file.flush()
+    
+    print("[purefy_subtitle] : Done.")
+
+def purefy_all_dir(in_path: str, lenth: str):
+    for file in os.listdir(in_path):
+        if file.endswith(".txt"):
+            purefy_subtitle(in_path + "/" + file, 'purefy_'+file, lenth)
+
+
 #----------------------------- Command ---------------------------------
 
 def shelp():
@@ -185,7 +235,10 @@ command_list = [
     ("mrename", memory.rename),
     ("trans", transfer_subtitle),
     ("ch", transfer_subtitle_ch),
-    ("dts", data_to_subtitle)
+    ("dts", data_to_subtitle),
+    ("p", purefy_subtitle),
+    ("pall", purefy_all_dir),
+    ("q", exit)
 ] 
 # list of command and functions
 
